@@ -18,7 +18,7 @@ A collection of network tools written in Go.
 
 ### Prerequisites
 
-- Go 1.21 or higher
+- Go 1.24.3 or higher
 
 ### Building
 
