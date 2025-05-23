@@ -51,7 +51,9 @@ func (s *Server) setupRoutes() {
 
 	// API routes
 	ipToolsHandler := handlers.NewIPToolsHandler()
+	dnsToolsHandler := handlers.NewDNSToolsHandler()
 	s.router.HandleFunc("/api/ip-tools", ipToolsHandler.Handle)
+	s.router.HandleFunc("/api/dns-tools", dnsToolsHandler.Handle)
 }
 
 // handleIndex handles the index page request
