@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/s0undy/systools/internal/api/models"
+	"github.com/s0undy/megadunder/internal/api/models"
 )
 
 // IPToolsHandler handles IP-related tool requests

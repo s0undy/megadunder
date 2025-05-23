@@ -1,6 +1,18 @@
-# systools
+# megadunder
 
-A collection of system tools written in Go.
+A collection of network tools written in Go.
+
+## Features
+
+- IPv4 and IPv6 support
+- Multiple network tools:
+  - ping
+  - curl (with HTTP/HTTPS support)
+  - telnet
+  - traceroute
+- Modern web interface with Tailwind CSS
+- Command timeouts for safety
+- Detailed error handling
 
 ## Getting Started
 
@@ -17,8 +29,10 @@ go build
 ### Running
 
 ```bash
-./systools
+./megadunder
 ```
+
+Then open your browser to http://localhost:8080
 
 ## License
 

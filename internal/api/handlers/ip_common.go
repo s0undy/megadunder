@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/s0undy/systools/internal/api/models"
+	"github.com/s0undy/megadunder/internal/api/models"
 )
 
 // IPHandler defines the interface for IP version specific handlers

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/s0undy/systools/internal/api/handlers"
-	"github.com/s0undy/systools/internal/middleware"
+	"github.com/s0undy/megadunder/internal/api/handlers"
+	"github.com/s0undy/megadunder/internal/middleware"
 )
 
 // Server represents our HTTP server

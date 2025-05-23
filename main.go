@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/s0undy/systools/internal/server"
+	"github.com/s0undy/megadunder/internal/server"
 )
 
 func main() {

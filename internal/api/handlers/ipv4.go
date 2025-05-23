@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/s0undy/systools/internal/api/models"
+	"github.com/s0undy/megadunder/internal/api/models"
 )
 
 // IPv4Handler handles IPv4-specific operations
