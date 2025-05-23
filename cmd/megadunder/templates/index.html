@@ -5,41 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Megadunder - Network Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
         <header class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">Megadunder</h1>
-            <p class="text-lg text-gray-600">A collection of network tools written in Go</p>
+            <h1 class="text-5xl font-bold text-primary-800 mb-4 tracking-tight">Megadunder</h1>
+            <p class="text-xl text-gray-600">A collection of network tools written in Go</p>
         </header>
 
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto">
             <!-- Tools Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- IP Tools Section -->
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">IP Tools</h2>
+                <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                    <h2 class="text-2xl font-bold text-primary-700 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                        </svg>
+                        IP Tools
+                    </h2>
                     
                     <!-- IP Input Form -->
                     <form id="ipForm" class="space-y-6">
-                        <div>
+                        <div class="group">
                             <label for="ipVersion" class="block text-sm font-medium text-gray-700 mb-2">IP Version</label>
-                            <select id="ipVersion" name="ipVersion" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select id="ipVersion" name="ipVersion" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200">
                                 <option value="ipv4">IPv4</option>
                                 <option value="ipv6">IPv6</option>
                             </select>
                         </div>
 
-                        <div>
+                        <div class="group">
                             <label for="ipAddress" class="block text-sm font-medium text-gray-700 mb-2">Host</label>
-                            <input type="text" id="ipAddress" name="ipAddress" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter hostname, IP address, or URL">
+                            <input type="text" id="ipAddress" name="ipAddress" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter hostname, IP address, or URL">
                         </div>
 
-                        <div>
+                        <div class="group">
                             <label for="command" class="block text-sm font-medium text-gray-700 mb-2">Command</label>
-                            <select id="command" name="command" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select id="command" name="command" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200">
                                 <option value="ping">ping</option>
                                 <option value="curl">curl</option>
                                 <option value="telnet">telnet</option>
@@ -47,58 +74,68 @@
                             </select>
                         </div>
 
-                        <!-- Curl Options (hidden by default) -->
+                        <!-- Curl Options -->
                         <div id="curlOptions" class="space-y-4 hidden">
-                            <div>
+                            <div class="group">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Protocol</label>
                                 <div class="flex space-x-4">
-                                    <label class="flex items-center space-x-2">
-                                        <input type="radio" id="protocolHttp" name="protocol" value="http" class="text-blue-500 focus:ring-blue-500" checked>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" id="protocolHttp" name="protocol" value="http" class="text-primary-500 focus:ring-primary-500" checked>
                                         <span class="text-sm text-gray-700">HTTP</span>
                                     </label>
-                                    <label class="flex items-center space-x-2">
-                                        <input type="radio" id="protocolHttps" name="protocol" value="https" class="text-blue-500 focus:ring-blue-500">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" id="protocolHttps" name="protocol" value="https" class="text-primary-500 focus:ring-primary-500">
                                         <span class="text-sm text-gray-700">HTTPS</span>
                                     </label>
                                 </div>
                             </div>
-                            <div>
+                            <div class="group">
                                 <label for="curlPort" class="block text-sm font-medium text-gray-700 mb-2">Custom Port (optional)</label>
-                                <input type="number" id="curlPort" name="curlPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter port number">
+                                <input type="number" id="curlPort" name="curlPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter port number">
                             </div>
                         </div>
 
-                        <!-- Telnet Options (hidden by default) -->
+                        <!-- Telnet Options -->
                         <div id="telnetOptions" class="space-y-4 hidden">
-                            <div>
+                            <div class="group">
                                 <label for="telnetPort" class="block text-sm font-medium text-gray-700 mb-2">Port Number (required)</label>
-                                <input type="number" id="telnetPort" name="telnetPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter port number (e.g., 23 for default telnet)" required>
+                                <input type="number" id="telnetPort" name="telnetPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter port number (e.g., 23 for default telnet)" required>
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300">
+                        <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md">
                             Run Command
                         </button>
                     </form>
 
                     <!-- IP Output -->
                     <div class="mt-8">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Output</h3>
-                        <div id="ipOutput" class="bg-gray-50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Output
+                        </h3>
+                        <div id="ipOutput" class="bg-gray-50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200 shadow-inner">
                             Output will appear here...
                         </div>
                     </div>
                 </div>
 
                 <!-- DNS Tools Section -->
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">DNS Tools</h2>
+                <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                    <h2 class="text-2xl font-bold text-primary-700 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                        </svg>
+                        DNS Tools
+                    </h2>
                     
                     <!-- DNS Lookup Form -->
                     <form id="dnsForm" class="space-y-6">
-                        <div>
+                        <div class="group">
                             <label for="recordType" class="block text-sm font-medium text-gray-700 mb-2">Record Type</label>
-                            <select id="recordType" name="recordType" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select id="recordType" name="recordType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200">
                                 <option value="A">A (IPv4 Address)</option>
                                 <option value="AAAA">AAAA (IPv6 Address)</option>
                                 <option value="CNAME">CNAME (Canonical Name)</option>
@@ -110,20 +147,25 @@
                             </select>
                         </div>
 
-                        <div>
+                        <div class="group">
                             <label for="dnsName" class="block text-sm font-medium text-gray-700 mb-2">Name to Lookup</label>
-                            <input type="text" id="dnsName" name="dnsName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter domain name (e.g., example.com)">
+                            <input type="text" id="dnsName" name="dnsName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter domain name (e.g., example.com)">
                         </div>
 
-                        <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300">
+                        <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md">
                             Lookup DNS Record
                         </button>
                     </form>
 
                     <!-- DNS Output -->
                     <div class="mt-8">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Output</h3>
-                        <div id="dnsOutput" class="bg-gray-50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Output
+                        </h3>
+                        <div id="dnsOutput" class="bg-gray-50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200 shadow-inner">
                             DNS lookup results will appear here...
                         </div>
                     </div>
@@ -132,7 +174,7 @@
 
             <!-- Footer -->
             <footer class="mt-12 text-center text-gray-600">
-                <p>&copy; 2024 Megadunder. All rights reserved.</p>
+                <p class="text-sm">&copy; 2024 Megadunder. All rights reserved.</p>
             </footer>
         </main>
     </div>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }} - Megadunder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex">
+    <!-- Navbar -->
+    <nav class="w-64 bg-white shadow-lg h-screen fixed left-0">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-primary-800 mb-2">Megadunder</h1>
+            <p class="text-sm text-gray-600 mb-8">Det kan alltid bli bättre ¯\_(ツ)_/¯</p>
+            <ul class="space-y-2">
+                <li>
+                    <a href="/ip-tools" class="flex items-center px-4 py-2 text-gray-700 rounded-lg {{ if eq .Active "ip" }}bg-primary-50 text-primary-700{{ else }}hover:bg-gray-50{{ end }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                        </svg>
+                        IP Tools
+                    </a>
+                </li>
+                <li>
+                    <a href="/dns-tools" class="flex items-center px-4 py-2 text-gray-700 rounded-lg {{ if eq .Active "dns" }}bg-primary-50 text-primary-700{{ else }}hover:bg-gray-50{{ end }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        DNS Tools
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="ml-64 flex-1">
+        <main class="container mx-auto px-8 py-8">
+            {{ template "content" . }}
+        </main>
+    </div>
+</body>
+</html> 
