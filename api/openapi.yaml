@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Megadunder API
+  description: API for network tools including IP and DNS utilities
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /api/ip-tools:
+    post:
+      summary: Execute IP-related commands
+      description: Run network commands like ping, curl, telnet, and traceroute
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IPToolsRequest'
+      responses:
+        '200':
+          description: Command executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPToolsResponse'
+        '400':
+          description: Invalid request
+        '429':
+          description: Rate limit exceeded
+        '504':
+          description: Command timeout
+
+  /api/dns-tools:
+    post:
+      summary: Perform DNS lookups
+      description: Look up various DNS record types
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DNSLookupRequest'
+      responses:
+        '200':
+          description: DNS lookup successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DNSLookupResponse'
+        '400':
+          description: Invalid request
+        '429':
+          description: Rate limit exceeded
+
+components:
+  schemas:
+    IPToolsRequest:
+      type: object
+      required:
+        - ipVersion
+        - ipAddress
+        - command
+      properties:
+        ipVersion:
+          type: string
+          enum: [ipv4, ipv6]
+        ipAddress:
+          type: string
+        command:
+          type: string
+          enum: [ping, curl, telnet, traceroute]
+        curlOptions:
+          type: object
+          properties:
+            protocol:
+              type: string
+              enum: [http, https]
+            port:
+              type: string
+
+    IPToolsResponse:
+      type: object
+      properties:
+        output:
+          type: string
+        error:
+          type: string
+
+    DNSLookupRequest:
+      type: object
+      required:
+        - recordType
+        - name
+      properties:
+        recordType:
+          type: string
+          enum: [A, AAAA, CNAME, MX, TXT, NS, SOA, PTR]
+        name:
+          type: string
+
+    DNSLookupResponse:
+      type: object
+      properties:
+        output:
+          type: string
+        error:
+          type: string 

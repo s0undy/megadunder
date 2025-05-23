@@ -1,4 +1,4 @@
-{{ define "content" }}
+{{ define "ip-content" }}
 <div class="max-w-3xl mx-auto">
     <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
         <h2 class="text-2xl font-bold text-primary-700 mb-6 flex items-center">
@@ -58,7 +58,7 @@
             <div id="telnetOptions" class="space-y-4 hidden">
                 <div class="group">
                     <label for="telnetPort" class="block text-sm font-medium text-gray-700 mb-2">Port Number (required)</label>
-                    <input type="number" id="telnetPort" name="telnetPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter port number (e.g., 23 for default telnet)" required>
+                    <input type="number" id="telnetPort" name="telnetPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter port number (e.g., 23 for default telnet)">
                 </div>
             </div>
 
@@ -81,83 +81,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Show/hide command options based on command selection
-    document.getElementById('command').addEventListener('change', function(e) {
-        const curlOptions = document.getElementById('curlOptions');
-        const telnetOptions = document.getElementById('telnetOptions');
-        const telnetPort = document.getElementById('telnetPort');
-        
-        // Hide all option sections first
-        curlOptions.classList.add('hidden');
-        telnetOptions.classList.add('hidden');
-        
-        // Show relevant options based on command
-        switch(e.target.value) {
-            case 'curl':
-                curlOptions.classList.remove('hidden');
-                telnetPort.required = false;
-                break;
-            case 'telnet':
-                telnetOptions.classList.remove('hidden');
-                telnetPort.required = true;
-                break;
-            default:
-                telnetPort.required = false;
-        }
-    });
-
-    document.getElementById('ipForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = {
-            ipVersion: document.getElementById('ipVersion').value,
-            ipAddress: document.getElementById('ipAddress').value,
-            command: document.getElementById('command').value,
-            curlOptions: {
-                protocol: document.querySelector('input[name="protocol"]:checked').value,
-                port: document.getElementById('curlPort').value || null
-            }
-        };
-
-        // Add telnet port to the address if telnet is selected
-        if (formData.command === 'telnet') {
-            const telnetPort = document.getElementById('telnetPort').value;
-            if (!telnetPort) {
-                alert('Please enter a port number for telnet');
-                return;
-            }
-            // For IPv6, we need to handle the address format differently
-            if (formData.ipVersion === 'ipv6') {
-                formData.ipAddress = `[${formData.ipAddress}]:${telnetPort}`;
-            } else {
-                formData.ipAddress = `${formData.ipAddress}:${telnetPort}`;
-            }
-        }
-
-        const outputDiv = document.getElementById('ipOutput');
-        outputDiv.textContent = 'Running command...';
-
-        try {
-            const response = await fetch('/api/ip-tools', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-            
-            if (result.error) {
-                outputDiv.textContent = `Error: ${result.error}\n${result.output || ''}`;
-            } else {
-                outputDiv.textContent = result.output;
-            }
-        } catch (error) {
-            outputDiv.textContent = 'Error: Failed to execute command';
-        }
-    });
-</script>
 {{ end }} 

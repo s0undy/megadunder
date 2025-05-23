@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full" data-debug="{{ if .Debug }}true{{ else }}false{{ end }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,21 +20,37 @@
                             600: '#0284c7',
                             700: '#0369a1',
                             800: '#075985',
-                            900: '#0c4a6e',
+                            900: '#0c4a6e'
                         }
                     }
                 }
             }
-        }
+        };
+    </script>
+    <script>
+        // Debug configuration and utilities
+        window.DEBUG = document.documentElement.dataset.debug === 'true';
+        window.debugLog = function(message, ...args) {
+            if (window.DEBUG) {
+                console.log(message, ...args);
+            }
+        };
     </script>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex">
+<body class="h-full bg-gradient-to-br from-gray-50 to-gray-100">
     <!-- Navbar -->
     <nav class="w-64 bg-white shadow-lg h-screen fixed left-0">
         <div class="p-6">
-            <h1 class="text-2xl font-bold text-primary-800 mb-2">Megadunder</h1>
-            <p class="text-sm text-gray-600 mb-8">Det kan alltid bli bättre ¯\_(ツ)_/¯</p>
+            <h1 class="text-2xl font-bold text-primary-800 mb-6">Megadunder</h1>
             <ul class="space-y-2">
+                <li>
+                    <a href="/" class="flex items-center px-4 py-2 text-gray-700 rounded-lg {{ if eq .Active "home" }}bg-primary-50 text-primary-700{{ else }}hover:bg-gray-50{{ end }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Home
+                    </a>
+                </li>
                 <li>
                     <a href="/ip-tools" class="flex items-center px-4 py-2 text-gray-700 rounded-lg {{ if eq .Active "ip" }}bg-primary-50 text-primary-700{{ else }}hover:bg-gray-50{{ end }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,10 +72,186 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="ml-64 flex-1">
-        <main class="container mx-auto px-8 py-8">
-            {{ template "content" . }}
+    <div class="ml-64 flex-1 flex flex-col h-screen">
+        <main class="flex-1 container mx-auto px-8 py-8">
+            {{ if eq .Active "home" }}
+                {{ template "index-content" . }}
+            {{ else if eq .Active "ip" }}
+                {{ template "ip-content" . }}
+            {{ else if eq .Active "dns" }}
+                {{ template "dns-content" . }}
+            {{ end }}
         </main>
+
+        <!-- Footer -->
+        <footer class="bg-white shadow-lg">
+            <div class="container mx-auto px-8 py-4">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-600">&copy; {{ .Year }} Megadunder. All rights reserved.</p>
+                    <div class="flex items-center space-x-4">
+                        <a href="https://github.com/s0undy/megadunder" class="text-gray-600 hover:text-primary-600 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
+
+    <!-- Page-specific scripts -->
+    {{ if eq .Active "ip" }}
+    <script>
+        debugLog('IP Tools script loading');
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            debugLog('DOM loaded, setting up event listeners');
+
+            const commandSelect = document.getElementById('command');
+            const ipForm = document.getElementById('ipForm');
+            const curlOptions = document.getElementById('curlOptions');
+            const telnetOptions = document.getElementById('telnetOptions');
+            const telnetPort = document.getElementById('telnetPort');
+            const ipAddress = document.getElementById('ipAddress');
+
+            if (!commandSelect || !ipForm || !curlOptions || !telnetOptions || !telnetPort || !ipAddress) {
+                debugLog('Required elements not found');
+                return;
+            }
+
+            // Show/hide command options based on command selection
+            commandSelect.addEventListener('change', function(e) {
+                debugLog('Command changed', e.target.value);
+                
+                // Hide all option sections first
+                curlOptions.classList.add('hidden');
+                telnetOptions.classList.add('hidden');
+                
+                // Show relevant options based on command
+                switch(e.target.value) {
+                    case 'curl':
+                        curlOptions.classList.remove('hidden');
+                        break;
+                    case 'telnet':
+                        telnetOptions.classList.remove('hidden');
+                        break;
+                }
+            });
+
+            ipForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                debugLog('Form submitted');
+
+                // Validate required fields
+                if (!ipAddress.value.trim()) {
+                    alert('Please enter a host address');
+                    ipAddress.focus();
+                    return;
+                }
+
+                const command = commandSelect.value;
+                if (command === 'telnet') {
+                    const portValue = telnetPort.value;
+                    if (!portValue || portValue < 1 || portValue > 65535) {
+                        alert('Please enter a valid port number (1-65535) for telnet');
+                        telnetPort.focus();
+                        return;
+                    }
+                }
+                
+                const formData = {
+                    ipVersion: document.getElementById('ipVersion').value,
+                    ipAddress: ipAddress.value,
+                    command: command,
+                    curlOptions: {
+                        protocol: document.querySelector('input[name="protocol"]:checked').value,
+                        port: document.getElementById('curlPort').value || null
+                    }
+                };
+
+                debugLog('Form data', formData);
+
+                // Add telnet port to the address if telnet is selected
+                if (command === 'telnet') {
+                    const portValue = telnetPort.value;
+                    // For IPv6, we need to handle the address format differently
+                    if (formData.ipVersion === 'ipv6') {
+                        formData.ipAddress = `[${formData.ipAddress}]:${portValue}`;
+                    } else {
+                        formData.ipAddress = `${formData.ipAddress}:${portValue}`;
+                    }
+                }
+
+                const outputDiv = document.getElementById('ipOutput');
+                outputDiv.textContent = 'Running command...';
+
+                try {
+                    debugLog('Sending request to /api/ip-tools');
+                    const response = await fetch('/api/ip-tools', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    debugLog('Response received', response);
+                    const result = await response.json();
+                    debugLog('Result', result);
+                    
+                    if (result.error) {
+                        outputDiv.textContent = `Error: ${result.error}\n${result.output || ''}`;
+                    } else {
+                        outputDiv.textContent = result.output;
+                    }
+                } catch (error) {
+                    debugLog('Error', error);
+                    outputDiv.textContent = 'Error: Failed to execute command';
+                }
+            });
+
+            debugLog('Event listeners set up successfully');
+        });
+    </script>
+    {{ end }}
+
+    {{ if eq .Active "dns" }}
+    <script>
+        document.getElementById('dnsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                recordType: document.getElementById('recordType').value,
+                name: document.getElementById('dnsName').value
+            };
+
+            const outputDiv = document.getElementById('dnsOutput');
+            outputDiv.textContent = 'Looking up DNS records...';
+
+            try {
+                const response = await fetch('/api/dns-tools', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    outputDiv.textContent = `Error: ${result.error}`;
+                } else {
+                    outputDiv.textContent = result.output;
+                }
+            } catch (error) {
+                debugLog('Error', error);
+                outputDiv.textContent = 'Error: Failed to perform DNS lookup';
+            }
+        });
+    </script>
+    {{ end }}
 </body>
 </html> 

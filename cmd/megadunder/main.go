@@ -2,36 +2,46 @@ package main
 
 import (
 	"embed"
-	"html/template"
 	"log"
-	"net/http"
+	"os"
+	"path/filepath"
 
-	"github.com/anton/megadunder/internal/handlers"
+	"github.com/s0undy/megadunder/internal/config"
+	"github.com/s0undy/megadunder/internal/server"
 )
 
 //go:embed templates/*
 var templateFS embed.FS
 
 func main() {
-	// Parse templates
-	tmpl, err := template.ParseFS(templateFS, "templates/*.html")
-	if err != nil {
-		log.Fatal(err)
+	// Change to project root directory if needed
+	if filepath.Base(os.Getenv("PWD")) == "megadunder" {
+		log.Println("Already in project root directory")
+	} else {
+		// Try to find and change to project root
+		for i := 0; i < 3; i++ { // Try up to 3 levels up
+			if _, err := os.Stat(".env"); err == nil {
+				log.Println("Found project root directory")
+				break
+			}
+			if err := os.Chdir(".."); err != nil {
+				log.Printf("Warning: Could not change directory: %v", err)
+				break
+			}
+		}
 	}
 
-	// Create handlers
-	h := handlers.NewHandler(tmpl)
+	// Log current directory
+	if pwd, err := os.Getwd(); err == nil {
+		log.Printf("Current directory: %s", pwd)
+	}
 
-	// Routes
-	http.HandleFunc("/", h.IndexHandler)
-	http.HandleFunc("/ip-tools", h.IPToolsHandler)
-	http.HandleFunc("/dns-tools", h.DNSToolsHandler)
-	http.HandleFunc("/api/ip-tools", h.IPToolsAPIHandler)
-	http.HandleFunc("/api/dns-tools", h.DNSToolsAPIHandler)
+	// Load configuration
+	cfg := config.Load()
 
-	// Start server
-	log.Println("Server starting on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	// Create and start server
+	srv := server.New("8080", templateFS, cfg)
+	if err := srv.Start(); err != nil {
 		log.Fatal(err)
 	}
 }
