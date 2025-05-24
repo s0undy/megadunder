@@ -89,10 +89,11 @@ jobs:
           tag_prefix: "v"
           major_pattern: "BREAKING CHANGE:"
           minor_pattern: "feat:"
-          patch_pattern: "fix:"
-          version_format: "${major}.${minor}.${patch}"
           bump_each_commit: true
+          bump_each_commit_patch_pattern: "fix:"
           search_commit_body: true
+          version_format: "${major}.${minor}.${patch}"
+          enable_prerelease_mode: false
       
       - name: Build Docker image
         id: build
