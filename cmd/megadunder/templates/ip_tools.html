@@ -1,84 +1,212 @@
 {{ define "ip-content" }}
-<div class="max-w-3xl mx-auto">
-    <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
-        <h2 class="text-2xl font-bold text-primary-700 mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-            </svg>
-            IP Tools
-        </h2>
-        
-        <!-- IP Input Form -->
-        <form id="ipForm" class="space-y-6">
-            <div class="group">
-                <label for="ipVersion" class="block text-sm font-medium text-gray-700 mb-2">IP Version</label>
-                <select id="ipVersion" name="ipVersion" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200">
-                    <option value="ipv4">IPv4</option>
-                    <option value="ipv6">IPv6</option>
-                </select>
-            </div>
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- IP Tools Form - Takes up 2 columns -->
+        <div class="md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                    </svg>
+                    IP Tools
+                </h2>
+                
+                <!-- IP Input Form -->
+                <form id="ipForm" class="space-y-6">
+                    <div class="group">
+                        <label for="ipVersion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IP Version</label>
+                        <select id="ipVersion" name="ipVersion" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200">
+                            <option value="ipv4">IPv4</option>
+                            <option value="ipv6">IPv6</option>
+                        </select>
+                    </div>
 
-            <div class="group">
-                <label for="ipAddress" class="block text-sm font-medium text-gray-700 mb-2">Host</label>
-                <input type="text" id="ipAddress" name="ipAddress" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter hostname, IP address, or URL">
-            </div>
+                    <div class="group">
+                        <label for="ipAddress" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Host</label>
+                        <input type="text" id="ipAddress" name="ipAddress" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200" placeholder="Enter hostname, IP address, or URL">
+                    </div>
 
-            <div class="group">
-                <label for="command" class="block text-sm font-medium text-gray-700 mb-2">Command</label>
-                <select id="command" name="command" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200">
-                    <option value="ping">ping</option>
-                    <option value="curl">curl</option>
-                    <option value="telnet">telnet</option>
-                    <option value="traceroute">traceroute</option>
-                </select>
-            </div>
+                    <div class="group">
+                        <label for="command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Command</label>
+                        <select id="command" name="command" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200">
+                            <option value="ping">ping</option>
+                            <option value="curl">curl</option>
+                            <option value="telnet">telnet</option>
+                            <option value="traceroute">traceroute</option>
+                        </select>
+                    </div>
 
-            <!-- Curl Options -->
-            <div id="curlOptions" class="space-y-4 hidden">
-                <div class="group">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Protocol</label>
-                    <div class="flex space-x-4">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" id="protocolHttp" name="protocol" value="http" class="text-primary-500 focus:ring-primary-500" checked>
-                            <span class="text-sm text-gray-700">HTTP</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" id="protocolHttps" name="protocol" value="https" class="text-primary-500 focus:ring-primary-500">
-                            <span class="text-sm text-gray-700">HTTPS</span>
-                        </label>
+                    <!-- Curl Options -->
+                    <div id="curlOptions" class="space-y-4 hidden">
+                        <div class="group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Protocol</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" id="protocolHttp" name="protocol" value="http" class="text-primary-500 focus:ring-primary-500 dark:bg-gray-700" checked>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">HTTP</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" id="protocolHttps" name="protocol" value="https" class="text-primary-500 focus:ring-primary-500 dark:bg-gray-700">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">HTTPS</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <label for="curlPort" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Port (optional)</label>
+                            <input type="number" id="curlPort" name="curlPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200" placeholder="Enter port number">
+                        </div>
+                    </div>
+
+                    <!-- Telnet Options -->
+                    <div id="telnetOptions" class="space-y-4 hidden">
+                        <div class="group">
+                            <label for="telnetPort" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Port Number (required)</label>
+                            <input type="number" id="telnetPort" name="telnetPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200" placeholder="Enter port number (e.g., 23 for default telnet)">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+                        Run Command
+                    </button>
+                </form>
+
+                <!-- IP Output -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Output
+                    </h3>
+                    <div id="ipOutput" class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 shadow-inner">
+                        Output will appear here...
                     </div>
                 </div>
-                <div class="group">
-                    <label for="curlPort" class="block text-sm font-medium text-gray-700 mb-2">Custom Port (optional)</label>
-                    <input type="number" id="curlPort" name="curlPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter port number">
-                </div>
             </div>
+        </div>
 
-            <!-- Telnet Options -->
-            <div id="telnetOptions" class="space-y-4 hidden">
-                <div class="group">
-                    <label for="telnetPort" class="block text-sm font-medium text-gray-700 mb-2">Port Number (required)</label>
-                    <input type="number" id="telnetPort" name="telnetPort" min="1" max="65535" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter port number (e.g., 23 for default telnet)">
+        <!-- Command Info Box - Takes up 1 column -->
+        <div class="md:col-span-1">
+            <div id="commandInfo" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 sticky top-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Command Information
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h4>
+                        <p id="commandDescription" class="text-sm text-gray-600 dark:text-gray-400">
+                            Select a command to see its description...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Example Input</h4>
+                        <p id="commandExample" class="text-sm text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded">
+                            Select a command to see an example...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Output</h4>
+                        <pre id="commandOutput" class="text-sm text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded whitespace-pre-wrap">
+Select a command to see sample output...
+                        </pre>
+                    </div>
                 </div>
-            </div>
-
-            <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md">
-                Run Command
-            </button>
-        </form>
-
-        <!-- IP Output -->
-        <div class="mt-8">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Output
-            </h3>
-            <div id="ipOutput" class="bg-gray-50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200 shadow-inner">
-                Output will appear here...
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Command information database
+    const commandTypes = {
+        'ping': {
+            'ipv4': {
+                description: 'Tests connectivity to an IPv4 host by sending ICMP Echo Request messages.',
+                example: '192.168.1.1 or example.com',
+                output: 'PING example.com (93.184.216.34) 56(84) bytes of data.\n64 bytes from 93.184.216.34: icmp_seq=1 ttl=56 time=12.3 ms\n64 bytes from 93.184.216.34: icmp_seq=2 ttl=56 time=11.8 ms'
+            },
+            'ipv6': {
+                description: 'Tests connectivity to an IPv6 host by sending ICMPv6 Echo Request messages.',
+                example: '2001:db8::1 or example.com',
+                output: 'PING example.com(2606:2800:220:1:248:1893:25c8:1946) 56 data bytes\n64 bytes from 2606:2800:220:1:248:1893:25c8:1946: icmp_seq=1 ttl=57 time=14.2 ms'
+            }
+        },
+        'curl': {
+            'ipv4': {
+                description: 'Makes HTTP/HTTPS requests to a server using IPv4. Retrieves web content or tests API endpoints.',
+                example: 'http://api.example.com:8080/v1/data',
+                output: '{\n  "status": "success",\n  "data": {\n    "message": "Hello, World!"\n  }\n}'
+            },
+            'ipv6': {
+                description: 'Makes HTTP/HTTPS requests to a server using IPv6. Retrieves web content or tests API endpoints.',
+                example: 'https://[2001:db8::1]:443/api/v1',
+                output: '{\n  "status": "success",\n  "data": {\n    "message": "Hello from IPv6!"\n  }\n}'
+            }
+        },
+        'telnet': {
+            'ipv4': {
+                description: 'Tests TCP connection to a specific port on an IPv4 host. Useful for checking if a port is open.',
+                example: 'example.com 23',
+                output: 'Trying 93.184.216.34...\nConnected to example.com.\nEscape character is \'^]\'.'
+            },
+            'ipv6': {
+                description: 'Tests TCP connection to a specific port on an IPv6 host. Useful for checking if a port is open.',
+                example: '2001:db8::1 23',
+                output: 'Trying 2001:db8::1...\nConnected to example.com.\nEscape character is \'^]\'.'
+            }
+        },
+        'traceroute': {
+            'ipv4': {
+                description: 'Shows the network path packets take to reach an IPv4 destination. Helps diagnose routing issues.',
+                example: 'example.com or 93.184.216.34',
+                output: 'traceroute to example.com (93.184.216.34), 30 hops max\n 1  router.local (192.168.1.1)  1.123 ms\n 2  isp.gateway (10.0.0.1)  12.432 ms\n 3  backbone.net (172.16.0.1)  25.064 ms'
+            },
+            'ipv6': {
+                description: 'Shows the network path packets take to reach an IPv6 destination. Helps diagnose routing issues.',
+                example: 'example.com or 2001:db8::1',
+                output: 'traceroute to example.com (2606:2800:220:1:248:1893:25c8:1946), 30 hops max\n 1  router.local (2001:db8:1::1)  2.456 ms\n 2  isp.gateway (2001:db8:2::1)  15.678 ms'
+            }
+        }
+    };
+
+    // Show/hide command specific options
+    document.getElementById('command').addEventListener('change', function() {
+        const command = this.value;
+        document.getElementById('curlOptions').classList.toggle('hidden', command !== 'curl');
+        document.getElementById('telnetOptions').classList.toggle('hidden', command !== 'telnet');
+        updateCommandInfo();
+    });
+
+    // Update command information when IP version or command changes
+    document.getElementById('ipVersion').addEventListener('change', updateCommandInfo);
+    document.getElementById('command').addEventListener('change', updateCommandInfo);
+
+    function updateCommandInfo() {
+        const command = document.getElementById('command').value;
+        const ipVersion = document.getElementById('ipVersion').value;
+        const info = commandTypes[command][ipVersion];
+        
+        if (info) {
+            document.getElementById('commandDescription').textContent = info.description;
+            document.getElementById('commandExample').textContent = info.example;
+            document.getElementById('commandOutput').textContent = info.output;
+        }
+    }
+
+    // Initialize with default values
+    updateCommandInfo();
+
+    // Show/hide protocol options for curl
+    document.getElementById('command').addEventListener('change', function() {
+        const command = this.value;
+        const curlOptions = document.getElementById('curlOptions');
+        const telnetOptions = document.getElementById('telnetOptions');
+        
+        curlOptions.classList.toggle('hidden', command !== 'curl');
+        telnetOptions.classList.toggle('hidden', command !== 'telnet');
+    });
+</script>
 {{ end }} 

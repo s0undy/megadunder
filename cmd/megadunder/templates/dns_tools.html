@@ -1,65 +1,208 @@
 {{ define "dns-content" }}
-<div class="max-w-3xl mx-auto">
-    <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
-        <h2 class="text-2xl font-bold text-primary-700 mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            DNS Tools
-        </h2>
-        
-        <!-- DNS Lookup Form -->
-        <form id="dnsForm" class="space-y-6">
-            <div class="group">
-                <label for="recordType" class="block text-sm font-medium text-gray-700 mb-2">Record Type</label>
-                <select id="recordType" name="recordType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200">
-                    <option value="A">A (IPv4 Address)</option>
-                    <option value="AAAA">AAAA (IPv6 Address)</option>
-                    <option value="CNAME">CNAME (Canonical Name)</option>
-                    <option value="MX">MX (Mail Exchange)</option>
-                    <option value="TXT">TXT (Text Record)</option>
-                    <option value="NS">NS (Name Server)</option>
-                    <option value="SOA">SOA (Start of Authority)</option>
-                    <option value="PTR">PTR (Pointer)</option>
-                </select>
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- DNS Tools Form - Takes up 2 columns -->
+        <div class="md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    DNS Tools
+                </h2>
+                
+                <!-- DNS Lookup Form -->
+                <form id="dnsForm" class="space-y-6">
+                    <div class="group">
+                        <label for="recordType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Record Type</label>
+                        <select id="recordType" name="recordType" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200">
+                            <option value="A">A (IPv4 Address)</option>
+                            <option value="AAAA">AAAA (IPv6 Address)</option>
+                            <option value="CNAME">CNAME (Canonical Name)</option>
+                            <option value="MX">MX (Mail Exchange)</option>
+                            <option value="TXT">TXT (Text Record)</option>
+                            <option value="NS">NS (Name Server)</option>
+                            <option value="SOA">SOA (Start of Authority)</option>
+                            <option value="PTR">PTR (Pointer)</option>
+                            <option value="DNSKEY">DNSKEY (DNSSEC Public Key)</option>
+                            <option value="DS">DS (Delegation Signer)</option>
+                            <option value="RRSIG">RRSIG (Resource Record Signature)</option>
+                            <option value="NSEC">NSEC (Next Secure)</option>
+                            <option value="NSEC3">NSEC3 (Next Secure v3)</option>
+                        </select>
+                    </div>
+
+                    <div class="group">
+                        <label for="dnsName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Name to Lookup</label>
+                        <input type="text" id="dnsName" name="dnsName" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200" placeholder="Enter domain name (e.g., example.com)">
+                    </div>
+
+                    <div class="group">
+                        <label class="flex items-center space-x-3">
+                            <input type="checkbox" id="checkDNSSEC" name="checkDNSSEC" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Check DNSSEC Status</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+                        Lookup DNS Record
+                    </button>
+                </form>
+
+                <!-- DNS Output -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Output
+                    </h3>
+
+                    <!-- DNSSEC Status Banner -->
+                    <div id="dnssecBanner" class="mb-4 hidden">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <div id="dnsOutput" class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 shadow-inner">
+                        DNS lookup results will appear here...
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="group">
-                <label for="dnsName" class="block text-sm font-medium text-gray-700 mb-2">Name to Lookup</label>
-                <input type="text" id="dnsName" name="dnsName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-sm transition-all duration-200" placeholder="Enter domain name (e.g., example.com)">
-            </div>
-
-            <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md">
-                Lookup DNS Record
-            </button>
-        </form>
-
-        <!-- DNS Output -->
-        <div class="mt-8">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Output
-            </h3>
-            <div id="dnsOutput" class="bg-gray-50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap h-48 overflow-y-auto border border-gray-200 shadow-inner">
-                DNS lookup results will appear here...
+        <!-- Record Type Info Box - Takes up 1 column -->
+        <div class="md:col-span-1">
+            <div id="recordInfo" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 sticky top-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Record Type Information
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h4>
+                        <p id="recordDescription" class="text-sm text-gray-600 dark:text-gray-400">
+                            Select a record type to see its description...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Example Input</h4>
+                        <p id="recordExample" class="text-sm text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded">
+                            Select a record type to see an example...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Output</h4>
+                        <pre id="recordOutput" class="text-sm text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded whitespace-pre-wrap">
+Select a record type to see sample output...
+                        </pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // Record type information database
+    const recordTypes = {
+        'A': {
+            description: 'Maps a domain name to an IPv4 address. This is the most common type of DNS record and is used for basic domain to IP address translation.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    A    93.184.216.34'
+        },
+        'AAAA': {
+            description: 'Maps a domain name to an IPv6 address. Similar to an A record but for newer IPv6 addresses.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    AAAA    2606:2800:220:1:248:1893:25c8:1946'
+        },
+        'CNAME': {
+            description: 'Creates an alias from one domain name to another. Commonly used for subdomains like www or for CDN integration.',
+            example: 'www.example.com',
+            output: 'www.example.com.    3600    IN    CNAME    example.com.'
+        },
+        'MX': {
+            description: 'Specifies the mail servers responsible for accepting email messages. Includes a priority value where lower numbers have higher priority.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    MX    10 mail.example.com.'
+        },
+        'TXT': {
+            description: 'Holds text information. Commonly used for SPF records, DKIM keys, and domain verification.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    TXT    "v=spf1 include:_spf.example.com ~all"'
+        },
+        'NS': {
+            description: 'Delegates a DNS zone to use the given authoritative name servers. Essential for domain name resolution.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    NS    ns1.example.com.\nexample.com.    3600    IN    NS    ns2.example.com.'
+        },
+        'SOA': {
+            description: 'Start of Authority record contains administrative information about the DNS zone, including serial number and refresh intervals.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    SOA    ns1.example.com. admin.example.com. (\n                                  2023100100 ; serial\n                                  7200       ; refresh\n                                  3600       ; retry\n                                  1209600    ; expire\n                                  3600     ) ; minimum'
+        },
+        'PTR': {
+            description: 'Pointer record maps an IP address to a domain name. Used for reverse DNS lookups.',
+            example: '93.184.216.34',
+            output: '34.216.184.93.in-addr.arpa.    3600    IN    PTR    example.com.'
+        },
+        'DNSKEY': {
+            description: 'Contains a public key used in the DNSSEC protocol. Part of the chain of trust for DNSSEC validation.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    DNSKEY    257 3 13 mdsswUyr3DPW132mOi8V9xESWE8jTo0dxCjjnopKl+GqJxpVXckHAeF+KkxLbxILfDLUT0rAK9iUzy1L53eKGQ=='
+        },
+        'DS': {
+            description: 'Delegation Signer record holds the hash of a DNSKEY record. Used in DNSSEC to verify the authenticity of the zone\'s DNSKEY.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    DS    31589 13 2 7c9be6b2c52cc3ea3ce4b12dcf42f04229fff7c5d7e46434c92884c9c6565460'
+        },
+        'RRSIG': {
+            description: 'Resource Record Signature contains the DNSSEC signature for a record set. Used to verify the authenticity of DNS records.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    RRSIG    A 13 2 3600 20231231235959 20231201000000 31589 example.com. XXXX=='
+        },
+        'NSEC': {
+            description: 'Next Secure record is used in DNSSEC to prove the non-existence of records. Links to the next record name in the zone.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    NSEC    www.example.com. A NS SOA MX TXT AAAA RRSIG NSEC DNSKEY'
+        },
+        'NSEC3': {
+            description: 'Similar to NSEC but uses hashed record names to prevent zone enumeration while still providing proof of non-existence.',
+            example: 'example.com',
+            output: 'example.com.    3600    IN    NSEC3    1 0 10 1234ABCD H5P3KDHQ12VIQSQ0VEBCECD1P5M3NB7I A RRSIG'
+        }
+    };
+
+    // Update record information when record type changes
+    document.getElementById('recordType').addEventListener('change', function() {
+        const recordType = this.value;
+        const info = recordTypes[recordType];
+        
+        if (info) {
+            document.getElementById('recordDescription').textContent = info.description;
+            document.getElementById('recordExample').textContent = info.example;
+            document.getElementById('recordOutput').textContent = info.output;
+        }
+    });
+
+    // Initialize with the default selected record type
+    document.getElementById('recordType').dispatchEvent(new Event('change'));
+
+    // Existing form submission code
     document.getElementById('dnsForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const formData = {
             recordType: document.getElementById('recordType').value,
-            name: document.getElementById('dnsName').value
+            name: document.getElementById('dnsName').value,
+            checkDNSSEC: document.getElementById('checkDNSSEC').checked
         };
 
         const outputDiv = document.getElementById('dnsOutput');
+        const dnssecBanner = document.getElementById('dnssecBanner');
         outputDiv.textContent = 'Looking up DNS records...';
+        dnssecBanner.classList.add('hidden');
 
         try {
             const response = await fetch('/api/dns-tools', {
@@ -76,10 +219,67 @@
                 outputDiv.textContent = `Error: ${result.error}`;
             } else {
                 outputDiv.textContent = result.output;
+                
+                // Display DNSSEC information if available
+                if (result.dnssecInfo) {
+                    updateDNSSECBanner(result.dnssecInfo);
+                }
             }
         } catch (error) {
             outputDiv.textContent = 'Error: Failed to perform DNS lookup';
         }
     });
+
+    function updateDNSSECBanner(dnssecInfo) {
+        const banner = document.getElementById('dnssecBanner');
+        let bgColor, textColor, borderColor, icon;
+
+        if (dnssecInfo.error) {
+            bgColor = 'bg-yellow-50';
+            textColor = 'text-yellow-800';
+            borderColor = 'border-yellow-200';
+            icon = `<svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>`;
+        } else if (dnssecInfo.enabled && dnssecInfo.validated) {
+            bgColor = 'bg-green-50';
+            textColor = 'text-green-800';
+            borderColor = 'border-green-200';
+            icon = `<svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>`;
+        } else {
+            bgColor = 'bg-red-50';
+            textColor = 'text-red-800';
+            borderColor = 'border-red-200';
+            icon = `<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>`;
+        }
+
+        banner.innerHTML = `
+            <div class="rounded-lg border ${borderColor} ${bgColor} p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        ${icon}
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium ${textColor}">
+                            ${dnssecInfo.status}
+                        </h3>
+                        <div class="mt-2 text-sm ${textColor}">
+                            <ul class="list-disc pl-5 space-y-1">
+                                ${dnssecInfo.validationDetails ? `<li>${dnssecInfo.validationDetails}</li>` : ''}
+                                ${dnssecInfo.hasDS ? `<li>DS Records found in parent zone</li>` : ''}
+                                ${dnssecInfo.signatureInfo ? `<li>${dnssecInfo.signatureInfo}</li>` : ''}
+                                ${dnssecInfo.error ? `<li>Error: ${dnssecInfo.error}</li>` : ''}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        banner.classList.remove('hidden');
+    }
 </script>
 {{ end }} 
