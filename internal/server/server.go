@@ -36,6 +36,7 @@ func New(port string, templateFS embed.FS, cfg *config.Config) *Server {
 		"templates/index.html",
 		"templates/ip_tools.html",
 		"templates/dns_tools.html",
+		"templates/cert_tools.html",
 	)
 	if err != nil {
 		log.Fatalf("Failed to parse content templates: %v", err)
@@ -85,12 +86,15 @@ func (s *Server) setupRoutes() {
 	s.router.HandleFunc("/", s.handleIndex)
 	s.router.HandleFunc("/ip-tools", s.handleIPTools)
 	s.router.HandleFunc("/dns-tools", s.handleDNSTools)
+	s.router.HandleFunc("/cert-tools", s.handleCertTools)
 
 	// API routes
 	ipToolsHandler := handlers.NewIPToolsHandler()
 	dnsToolsHandler := handlers.NewDNSToolsHandler()
+	certToolsHandler := &handlers.Handler{} // Initialize directly since we don't need any special setup
 	s.router.HandleFunc("/api/ip-tools", ipToolsHandler.Handle)
 	s.router.HandleFunc("/api/dns-tools", dnsToolsHandler.Handle)
+	s.router.HandleFunc("/api/cert-tools", certToolsHandler.HandleCertTools)
 }
 
 // handleIndex handles the index page request
@@ -150,6 +154,27 @@ func (s *Server) handleDNSTools(w http.ResponseWriter, r *http.Request) {
 	}{
 		Title:  "DNS Tools",
 		Active: "dns",
+		Year:   2024,
+		Debug:  s.config.Debug,
+	}
+
+	if err := s.template.ExecuteTemplate(w, "layout.html", data); err != nil {
+		log.Printf("Error executing template: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// handleCertTools handles the Certificate Tools page request
+func (s *Server) handleCertTools(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title  string
+		Active string
+		Year   int
+		Debug  bool
+	}{
+		Title:  "Certificate Tools",
+		Active: "cert",
 		Year:   2024,
 		Debug:  s.config.Debug,
 	}

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  megadunder:
+    image: ghcr.io/s0undy/megadunder:0.1.1
+    container_name: megadunder
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=UTC
+    # Add healthcheck to ensure the application is running properly
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # Set resource limits to prevent container from using too much resources
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    # Add labels for better container management
+    labels:
+      - "com.megadunder.description=Network Tools Web Application"
+      - "com.megadunder.version=0.1.1" 

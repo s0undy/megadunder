@@ -67,6 +67,14 @@
                         DNS Tools
                     </a>
                 </li>
+                <li>
+                    <a href="/cert-tools" class="flex items-center px-4 py-2 text-gray-700 rounded-lg {{ if eq .Active "cert" }}bg-primary-50 text-primary-700{{ else }}hover:bg-gray-50{{ end }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Certificate Tools
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -80,6 +88,8 @@
                 {{ template "ip-content" . }}
             {{ else if eq .Active "dns" }}
                 {{ template "dns-content" . }}
+            {{ else if eq .Active "cert" }}
+                {{ template "cert-content" . }}
             {{ end }}
         </main>
 
