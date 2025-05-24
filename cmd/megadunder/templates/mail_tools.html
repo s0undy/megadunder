@@ -1,0 +1,321 @@
+{{ define "mail-content" }}
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Mail Tools Form - Takes up 2 columns -->
+        <div class="md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Mail Tools
+                </h2>
+                
+                <!-- Mail Tools Form -->
+                <form id="mailToolsForm" class="space-y-6">
+                    <div class="group">
+                        <label for="domain" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain</label>
+                        <input type="text" id="domain" name="domain" required
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200"
+                            placeholder="Enter domain name (e.g., example.com)">
+                    </div>
+
+                    <div class="group">
+                        <label for="checkType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Check Type</label>
+                        <select id="checkType" name="checkType"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200">
+                            <option value="all">All Checks</option>
+                            <option value="spf">SPF Only</option>
+                            <option value="dmarc">DMARC Only</option>
+                            <option value="dkim">DKIM Only</option>
+                            <option value="mx">MX Only</option>
+                            <option value="smtp">SMTP Only</option>
+                        </select>
+                    </div>
+
+                    <!-- DKIM Selector (conditionally shown) -->
+                    <div id="dkimOptions" class="hidden group">
+                        <label for="dkimSelector" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">DKIM Selector</label>
+                        <input type="text" id="dkimSelector" name="dkimSelector"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200"
+                            placeholder="default">
+                    </div>
+
+                    <!-- SMTP Options (conditionally shown) -->
+                    <div id="smtpOptions" class="hidden space-y-4">
+                        <div class="group">
+                            <label for="smtpPort" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SMTP Port</label>
+                            <input type="text" id="smtpPort" name="smtpPort"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200"
+                                placeholder="25">
+                        </div>
+                        <div class="group flex items-center">
+                            <input type="checkbox" id="checkTLS" name="checkTLS"
+                                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <label for="checkTLS" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Check TLS Support
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                        class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+                        <div class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Run Check
+                        </div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Results
+                </h3>
+                <div id="results" class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 shadow-inner">
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Run a check to see the results...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check Type Info Box -->
+        <div class="md:col-span-1">
+            <div id="checkInfo" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 sticky top-4 hover:shadow-xl transition-shadow duration-300">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Check Type Information
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h4>
+                        <p id="checkDescription" class="text-sm text-gray-600 dark:text-gray-400">
+                            Select a check type to see its description...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">What it Checks</h4>
+                        <ul id="checkDetails" class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+                            Select a check type to see details...
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Example</h4>
+                        <pre id="checkExample" class="text-sm text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded whitespace-pre-wrap">Select a check type to see an example...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mailToolsForm');
+    const checkType = document.getElementById('checkType');
+    const dkimOptions = document.getElementById('dkimOptions');
+    const smtpOptions = document.getElementById('smtpOptions');
+    const results = document.getElementById('results');
+
+    // Check type information database
+    const checkTypes = {
+        'all': {
+            description: 'Comprehensive email configuration check that runs all available verifications.',
+            details: [
+                'SPF record validation',
+                'DMARC policy verification',
+                'DKIM record checking',
+                'MX record validation',
+                'SMTP server testing'
+            ],
+            example: 'Domain: example.com\nAll checks will be performed in sequence'
+        },
+        'spf': {
+            description: 'Validates the Sender Policy Framework (SPF) record configuration.',
+            details: [
+                'SPF record presence',
+                'SPF syntax validation',
+                'Included domains',
+                'IP mechanisms',
+                'All mechanism (default policy)'
+            ],
+            example: 'v=spf1 include:_spf.example.com ip4:192.0.2.0/24 ~all'
+        },
+        'dmarc': {
+            description: 'Checks Domain-based Message Authentication, Reporting, and Conformance (DMARC) policy.',
+            details: [
+                'DMARC record presence',
+                'Policy configuration (none/quarantine/reject)',
+                'Reporting configuration',
+                'Percentage configuration',
+                'Subdomain policy'
+            ],
+            example: 'v=DMARC1; p=reject; rua=mailto:reports@example.com'
+        },
+        'dkim': {
+            description: 'Verifies DomainKeys Identified Mail (DKIM) record configuration.',
+            details: [
+                'DKIM record presence',
+                'Public key validation',
+                'Key type and length',
+                'Selector configuration',
+                'Testing flags'
+            ],
+            example: 'Selector: default\nRecord: v=DKIM1; k=rsa; p=MIGfMA0...'
+        },
+        'mx': {
+            description: 'Validates Mail Exchange (MX) record configuration.',
+            details: [
+                'MX record presence',
+                'Priority settings',
+                'Mail server hostname resolution',
+                'Multiple MX support',
+                'Backup MX configuration'
+            ],
+            example: '10 mail.example.com\n20 backup-mail.example.com'
+        },
+        'smtp': {
+            description: 'Tests SMTP server connectivity and configuration.',
+            details: [
+                'SMTP server reachability',
+                'Connection establishment',
+                'STARTTLS support',
+                'TLS certificate validation',
+                'Common ports testing'
+            ],
+            example: 'Server: mail.example.com\nPort: 25\nTLS: Enabled'
+        }
+    };
+
+    // Show/hide conditional options based on check type
+    checkType.addEventListener('change', function() {
+        dkimOptions.classList.toggle('hidden', !['all', 'dkim'].includes(this.value));
+        smtpOptions.classList.toggle('hidden', !['all', 'smtp'].includes(this.value));
+        updateCheckTypeInfo(this.value);
+    });
+
+    // Update check type information
+    function updateCheckTypeInfo(type) {
+        const info = checkTypes[type];
+        if (info) {
+            document.getElementById('checkDescription').textContent = info.description;
+            document.getElementById('checkDetails').innerHTML = info.details
+                .map(detail => `<li>${detail}</li>`)
+                .join('');
+            document.getElementById('checkExample').textContent = info.example;
+        }
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Show loading state
+        results.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Running checks...</p>';
+
+        // Prepare the request data
+        const formData = {
+            domain: document.getElementById('domain').value,
+            checkType: checkType.value,
+            dkimSelector: document.getElementById('dkimSelector').value,
+            smtpOptions: {
+                port: document.getElementById('smtpPort').value,
+                checkTLS: document.getElementById('checkTLS').checked
+            }
+        };
+
+        try {
+            const response = await fetch('/api/mail-tools', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                results.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                return;
+            }
+
+            // Format and display results
+            let resultsHtml = '';
+
+            if (data.output) {
+                resultsHtml = formatOutput(data.output);
+            } else {
+                // Format individual check results
+                const checks = {
+                    'SPF': data.spfInfo,
+                    'DMARC': data.dmarcInfo,
+                    'DKIM': data.dkimInfo,
+                    'MX': data.mxInfo,
+                    'SMTP': data.smtpInfo
+                };
+
+                for (const [checkName, info] of Object.entries(checks)) {
+                    if (info) {
+                        resultsHtml += formatCheckResult(checkName, info);
+                    }
+                }
+            }
+
+            results.innerHTML = resultsHtml;
+        } catch (error) {
+            results.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+        }
+    });
+
+    function formatOutput(output) {
+        return `<pre class="whitespace-pre-wrap text-sm font-mono bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">${escapeHtml(output)}</pre>`;
+    }
+
+    function formatCheckResult(checkName, info) {
+        const statusColors = {
+            'valid': 'text-green-500',
+            'warning': 'text-yellow-500',
+            'error': 'text-red-500'
+        };
+
+        let html = `
+            <div class="mb-4 last:mb-0">
+                <h4 class="font-semibold ${statusColors[info.status]}">${info.title}</h4>
+                <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">${info.message}</p>
+        `;
+
+        if (info.details && info.details.length > 0) {
+            html += `
+                <ul class="text-sm text-gray-600 dark:text-gray-400 mt-2 list-disc list-inside">
+                    ${info.details.map(detail => `<li>${escapeHtml(detail)}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        html += '</div>';
+        return html;
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Initialize with the default selected check type
+    updateCheckTypeInfo(checkType.value);
+});
+</script>
+{{ end }} 
