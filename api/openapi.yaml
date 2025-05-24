@@ -1,7 +1,7 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: Megadunder API
-  description: API for network tools including IP and DNS utilities
+  description: API for network, DNS, certificate, and mail server analysis tools
   version: 1.0.0
 
 servers:
@@ -36,7 +36,7 @@ paths:
   /api/dns-tools:
     post:
       summary: Perform DNS lookups
-      description: Look up various DNS record types
+      description: Look up various DNS record types including DNSSEC records
       requestBody:
         required: true
         content:
@@ -54,6 +54,54 @@ paths:
           description: Invalid request
         '429':
           description: Rate limit exceeded
+
+  /api/cert-tools:
+    post:
+      summary: Analyze SSL/TLS certificates
+      description: Inspect and validate SSL/TLS certificates, check revocation status, and visualize certificate chains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertToolsRequest'
+      responses:
+        '200':
+          description: Certificate analysis successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertToolsResponse'
+        '400':
+          description: Invalid request
+        '429':
+          description: Rate limit exceeded
+        '504':
+          description: Connection timeout
+
+  /api/mail-tools:
+    post:
+      summary: Analyze mail server configuration
+      description: Check email server configuration including SPF, DMARC, DKIM, MX records, and SMTP settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MailToolsRequest'
+      responses:
+        '200':
+          description: Mail server analysis successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailToolsResponse'
+        '400':
+          description: Invalid request
+        '429':
+          description: Rate limit exceeded
+        '504':
+          description: Connection timeout
 
 components:
   schemas:
@@ -79,7 +127,9 @@ components:
               type: string
               enum: [http, https]
             port:
-              type: string
+              type: integer
+              minimum: 1
+              maximum: 65535
 
     IPToolsResponse:
       type: object
@@ -97,9 +147,12 @@ components:
       properties:
         recordType:
           type: string
-          enum: [A, AAAA, CNAME, MX, TXT, NS, SOA, PTR]
+          enum: [A, AAAA, CNAME, MX, TXT, NS, SOA, PTR, DNSKEY, DS, RRSIG, NSEC, NSEC3]
         name:
           type: string
+        checkDNSSEC:
+          type: boolean
+          default: false
 
     DNSLookupResponse:
       type: object
@@ -107,4 +160,194 @@ components:
         output:
           type: string
         error:
-          type: string 
+          type: string
+        dnssecInfo:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            validated:
+              type: boolean
+            status:
+              type: string
+            validationDetails:
+              type: string
+            hasDS:
+              type: boolean
+            signatureInfo:
+              type: string
+
+    CertToolsRequest:
+      type: object
+      required:
+        - hostname
+        - port
+        - checkType
+      properties:
+        hostname:
+          type: string
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        checkType:
+          type: string
+          enum: [chain, connection, validation]
+
+    CertToolsResponse:
+      type: object
+      properties:
+        output:
+          type: string
+        error:
+          type: string
+        chain:
+          type: array
+          items:
+            $ref: '#/components/schemas/CertInfo'
+        chainStatus:
+          type: object
+          properties:
+            isValid:
+              type: boolean
+            errorMessage:
+              type: string
+            expiresIn:
+              type: integer
+            nextExpiry:
+              type: string
+            expiryWarning:
+              type: string
+
+    CertInfo:
+      type: object
+      properties:
+        subject:
+          type: string
+        issuer:
+          type: string
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        serialNumber:
+          type: string
+        version:
+          type: integer
+        keyUsage:
+          type: array
+          items:
+            type: string
+        sans:
+          type: array
+          items:
+            type: string
+        signatureAlg:
+          type: string
+        publicKeyType:
+          type: string
+        publicKeyBits:
+          type: integer
+        crlStatus:
+          type: string
+        crlDetails:
+          type: string
+
+    MailToolsRequest:
+      type: object
+      required:
+        - domain
+        - checkType
+      properties:
+        domain:
+          type: string
+        checkType:
+          type: string
+          enum: [all, spf, dmarc, dkim, mx, smtp]
+        dkimSelector:
+          type: string
+        smtpOptions:
+          type: object
+          properties:
+            port:
+              type: integer
+              minimum: 1
+              maximum: 65535
+            checkTLS:
+              type: boolean
+              default: false
+
+    MailToolsResponse:
+      type: object
+      properties:
+        output:
+          type: string
+        error:
+          type: string
+        spfInfo:
+          type: object
+          properties:
+            status:
+              type: string
+            title:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+        dmarcInfo:
+          type: object
+          properties:
+            status:
+              type: string
+            title:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+        dkimInfo:
+          type: object
+          properties:
+            status:
+              type: string
+            title:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+        mxInfo:
+          type: object
+          properties:
+            status:
+              type: string
+            title:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+        smtpInfo:
+          type: object
+          properties:
+            status:
+              type: string
+            title:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: string 

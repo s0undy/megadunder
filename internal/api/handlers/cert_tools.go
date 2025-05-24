@@ -506,11 +506,25 @@ func validateChain(certs []*x509.Certificate) struct {
 
 // formatCertName returns a human-readable name for the certificate
 func formatCertName(cert *x509.Certificate, index, total int) string {
+	var name string
 	if index == 0 {
-		return "Server Certificate"
+		name = "Server Certificate"
+		// Add the common name or first DNS name if available
+		if cert.Subject.CommonName != "" {
+			name += fmt.Sprintf(" (%s)", cert.Subject.CommonName)
+		} else if len(cert.DNSNames) > 0 {
+			name += fmt.Sprintf(" (%s)", cert.DNSNames[0])
+		}
+	} else if index == total-1 {
+		name = "Root CA"
+		if len(cert.Subject.Organization) > 0 {
+			name += fmt.Sprintf(" (%s)", cert.Subject.Organization[0])
+		}
+	} else {
+		name = fmt.Sprintf("Intermediate CA %d", index)
+		if len(cert.Subject.Organization) > 0 {
+			name += fmt.Sprintf(" (%s)", cert.Subject.Organization[0])
+		}
 	}
-	if index == total-1 {
-		return "Root CA"
-	}
-	return fmt.Sprintf("Intermediate CA %d", index)
+	return name
 }

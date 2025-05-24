@@ -236,6 +236,17 @@ func (h *MailToolsHandler) checkDKIM(domain, selector string, response *models.M
 		selector = "default" // Try a common default selector
 	}
 
+	// Validate selector format (only allow alphanumeric characters, hyphen, and underscore)
+	if !isValidSelector(selector) {
+		response.DKIMInfo = &models.CheckInfo{
+			Status:  "error",
+			Title:   "DKIM Check Failed",
+			Message: "Invalid DKIM selector format",
+			Details: []string{"Selector can only contain letters, numbers, hyphens, and underscores"},
+		}
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -302,6 +313,25 @@ func (h *MailToolsHandler) checkDKIM(domain, selector string, response *models.M
 	}
 }
 
+// isValidSelector checks if a DKIM selector contains only valid characters
+func isValidSelector(selector string) bool {
+	for _, r := range selector {
+		if !isValidSelectorChar(r) {
+			return false
+		}
+	}
+	return true
+}
+
+// isValidSelectorChar checks if a character is valid in a DKIM selector
+func isValidSelectorChar(r rune) bool {
+	return (r >= 'a' && r <= 'z') ||
+		(r >= 'A' && r <= 'Z') ||
+		(r >= '0' && r <= '9') ||
+		r == '-' ||
+		r == '_'
+}
+
 // checkMX checks MX record configuration
 func (h *MailToolsHandler) checkMX(domain string, response *models.MailToolsResponse) {
 	mxRecords, err := net.LookupMX(domain)
@@ -356,7 +386,13 @@ func (h *MailToolsHandler) checkSMTP(domain string, options models.SMTPOptions, 
 
 	// Try to connect to the first MX record
 	server := strings.TrimSuffix(mxRecords[0].Host, ".")
-	address := fmt.Sprintf("%s:%s", server, options.Port)
+
+	// Format address to handle both IPv4 and IPv6
+	address := server + ":" + options.Port
+	if strings.Contains(server, ":") {
+		// IPv6 address needs to be enclosed in square brackets
+		address = fmt.Sprintf("[%s]:%s", server, options.Port)
+	}
 
 	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
 	if err != nil {
