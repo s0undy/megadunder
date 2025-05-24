@@ -63,11 +63,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Install Cosign for image signing
-      - name: Install cosign
-        if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@v3.4.0
           
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -138,15 +133,6 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
-
-      # Sign the container image
-      - name: Sign the container image
-        if: github.event_name != 'pull_request' && success()
-        env:
-          COSIGN_EXPERIMENTAL: 1
-        run: |
-          echo "Signing image with digest: ${{ steps.build.outputs.digest }}"
-          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
       
       # Create Release
       - name: Create Release
