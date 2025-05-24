@@ -11,7 +11,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
-permissions: # Add top-level permissions
+permissions:
   contents: write
   packages: write
   security-events: write
@@ -95,40 +95,51 @@ jobs:
           version_format: "${major}.${minor}.${patch}"
           enable_prerelease_mode: false
       
-      - name: Build Docker image
-        id: build
+      # Build local image for scanning
+      - name: Build local image for scanning
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
+          load: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:scan-target
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          provenance: true
-          sbom: true
-          load: true  # Load the image locally for Trivy scanning
 
-      # Scan for vulnerabilities (only if image was built)
+      # Scan for vulnerabilities
       - name: Run Trivy vulnerability scanner
         if: github.event_name != 'pull_request'
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:scan-target
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           timeout: '5m'
 
-      # Upload scan results to GitHub Security tab (only if scan was performed)
+      # Upload scan results to GitHub Security tab
       - name: Upload Trivy scan results to GitHub Security tab
         if: github.event_name != 'pull_request' && success()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
-      # Sign the container image (only if image was pushed)
+      # Build and push multi-platform image
+      - name: Build and push multi-platform image
+        id: build
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
+
+      # Sign the container image
       - name: Sign the container image
         if: github.event_name != 'pull_request' && success()
         env:
@@ -137,7 +148,7 @@ jobs:
           echo "Signing image with digest: ${{ steps.build.outputs.digest }}"
           cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
       
-      # Create Release (only on tag push)
+      # Create Release
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/') && success()
         uses: softprops/action-gh-release@v1
