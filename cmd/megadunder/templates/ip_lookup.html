@@ -1,0 +1,337 @@
+{{ define "ip-lookup-content" }}
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- IP Lookup Form - Takes up 2 columns -->
+        <div class="md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                <h2 class="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                    </svg>
+                    IP Lookup
+                </h2>
+                
+                <!-- IP Lookup Form -->
+                <form id="ipLookupForm" class="space-y-6">
+                    <div class="group">
+                        <label for="query" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IP Address or AS Number</label>
+                        <input type="text" id="query" name="query" 
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200" 
+                            placeholder="Enter IP address (e.g., 8.8.8.8) or AS number (e.g., AS15169)">
+                    </div>
+
+                    <div class="group">
+                        <label for="database" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Database</label>
+                        <select id="database" name="database" 
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 dark:text-gray-100 shadow-sm transition-all duration-200">
+                            <option value="auto">Auto-detect</option>
+                            <option value="ripe">RIPE NCC</option>
+                            <option value="arin">ARIN</option>
+                            <option value="apnic">APNIC</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+                        <div class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Lookup
+                        </div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Results
+                </h3>
+
+                <!-- Results Sections -->
+                <div id="lookupResults" class="space-y-4">
+                    <!-- Basic Info Section -->
+                    <div id="basicInfo" class="hidden">
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Basic Information</h4>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-2"></div>
+                    </div>
+
+                    <!-- Network Info Section -->
+                    <div id="networkInfo" class="hidden">
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Network Information</h4>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-2"></div>
+                    </div>
+
+                    <!-- Contact Info Section -->
+                    <div id="contactInfo" class="hidden">
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Information</h4>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-2"></div>
+                    </div>
+
+                    <!-- Raw Response Section -->
+                    <div id="rawResponse" class="hidden">
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Raw Response</h4>
+                        <pre class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap overflow-x-auto"></pre>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden">
+                    <div class="flex items-center justify-center p-8">
+                        <svg class="animate-spin h-8 w-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="ml-3 text-gray-600 dark:text-gray-400">Loading results...</span>
+                    </div>
+                </div>
+
+                <!-- Initial State -->
+                <div id="initialState">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                        Enter an IP address or AS number to see lookup results
+                    </p>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="hidden">
+                    <div class="bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded-lg p-4">
+                        <div class="flex">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium">Error</h3>
+                                <div class="mt-2 text-sm" id="errorMessage"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Box - Takes up 1 column -->
+        <div class="md:col-span-1">
+            <div id="databaseInfo" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 sticky top-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Database Information
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h4>
+                        <p id="databaseDescription" class="text-sm text-gray-600 dark:text-gray-400">
+                            Select a database to see its description...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Coverage</h4>
+                        <p id="databaseCoverage" class="text-sm text-gray-600 dark:text-gray-400">
+                            Select a database to see its coverage...
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Query Examples</h4>
+                        <div id="databaseExamples" class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                            <p class="font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded">Select a database to see examples...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Database information
+const databases = {
+    'auto': {
+        description: 'Automatically detect the appropriate database based on the IP address or AS number.',
+        coverage: 'Global - will route your query to the appropriate Regional Internet Registry.',
+        examples: [
+            '8.8.8.8 (IP address)',
+            'AS15169 (AS number)',
+            '2001:db8:: (IPv6 address)'
+        ]
+    },
+    'ripe': {
+        description: 'RIPE NCC is the Regional Internet Registry for Europe, the Middle East, and parts of Central Asia.',
+        coverage: 'Europe, Middle East, Central Asia',
+        examples: [
+            '193.0.0.0/8',
+            'AS3333',
+            '2001:67c::/32'
+        ]
+    },
+    'arin': {
+        description: 'ARIN is the Regional Internet Registry for the United States, Canada, and parts of the Caribbean.',
+        coverage: 'North America, parts of the Caribbean',
+        examples: [
+            '8.0.0.0/8',
+            'AS7922',
+            '2600::/12'
+        ]
+    },
+    'apnic': {
+        description: 'APNIC is the Regional Internet Registry for the Asia Pacific region.',
+        coverage: 'Asia Pacific region',
+        examples: [
+            '1.0.0.0/8',
+            'AS4608',
+            '2400::/12'
+        ]
+    }
+};
+
+// Update database information when selection changes
+document.getElementById('database').addEventListener('change', function() {
+    const database = databases[this.value];
+    if (database) {
+        document.getElementById('databaseDescription').textContent = database.description;
+        document.getElementById('databaseCoverage').textContent = database.coverage;
+        document.getElementById('databaseExamples').innerHTML = database.examples
+            .map(example => `<p class="font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded">${example}</p>`)
+            .join('');
+    }
+});
+
+// Initialize with default database selection
+document.getElementById('database').dispatchEvent(new Event('change'));
+
+// Form submission handler
+document.getElementById('ipLookupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Show loading state
+    document.getElementById('initialState').classList.add('hidden');
+    document.getElementById('errorState').classList.add('hidden');
+    document.getElementById('loadingState').classList.remove('hidden');
+    
+    // Hide all result sections
+    ['basicInfo', 'networkInfo', 'contactInfo', 'rawResponse'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+    });
+
+    const formData = {
+        query: document.getElementById('query').value,
+        database: document.getElementById('database').value
+    };
+
+    try {
+        const response = await fetch('/api/ip-lookup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        // Hide loading state
+        document.getElementById('loadingState').classList.add('hidden');
+
+        if (data.error) {
+            // Show error state
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = data.error;
+            return;
+        }
+
+        // Update and show result sections
+        updateResults(data);
+
+    } catch (error) {
+        // Hide loading state and show error
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        document.getElementById('errorMessage').textContent = 'Failed to perform lookup: ' + error.message;
+    }
+});
+
+function updateResults(data) {
+    // Update Basic Info
+    if (data.basicInfo) {
+        const basicInfoDiv = document.getElementById('basicInfo');
+        basicInfoDiv.classList.remove('hidden');
+        basicInfoDiv.querySelector('div').innerHTML = formatBasicInfo(data.basicInfo);
+    }
+
+    // Update Network Info
+    if (data.networkInfo) {
+        const networkInfoDiv = document.getElementById('networkInfo');
+        networkInfoDiv.classList.remove('hidden');
+        networkInfoDiv.querySelector('div').innerHTML = formatNetworkInfo(data.networkInfo);
+    }
+
+    // Update Contact Info
+    if (data.contactInfo) {
+        const contactInfoDiv = document.getElementById('contactInfo');
+        contactInfoDiv.classList.remove('hidden');
+        contactInfoDiv.querySelector('div').innerHTML = formatContactInfo(data.contactInfo);
+    }
+
+    // Update Raw Response
+    if (data.rawResponse) {
+        const rawResponseDiv = document.getElementById('rawResponse');
+        rawResponseDiv.classList.remove('hidden');
+        rawResponseDiv.querySelector('pre').textContent = data.rawResponse;
+    }
+}
+
+function formatBasicInfo(info) {
+    return Object.entries(info)
+        .map(([key, value]) => `
+            <div class="flex justify-between">
+                <span class="font-medium text-gray-700 dark:text-gray-300">${formatKey(key)}:</span>
+                <span class="text-gray-600 dark:text-gray-400">${value}</span>
+            </div>
+        `)
+        .join('');
+}
+
+function formatNetworkInfo(info) {
+    return Object.entries(info)
+        .map(([key, value]) => `
+            <div class="flex justify-between">
+                <span class="font-medium text-gray-700 dark:text-gray-300">${formatKey(key)}:</span>
+                <span class="text-gray-600 dark:text-gray-400">${Array.isArray(value) ? value.join(', ') : value}</span>
+            </div>
+        `)
+        .join('');
+}
+
+function formatContactInfo(info) {
+    return Object.entries(info)
+        .map(([key, value]) => `
+            <div class="flex justify-between">
+                <span class="font-medium text-gray-700 dark:text-gray-300">${formatKey(key)}:</span>
+                <span class="text-gray-600 dark:text-gray-400">${formatContactValue(value)}</span>
+            </div>
+        `)
+        .join('');
+}
+
+function formatKey(key) {
+    return key
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+function formatContactValue(value) {
+    if (Array.isArray(value)) {
+        return value.join('<br>');
+    }
+    if (typeof value === 'string' && value.includes('@')) {
+        return value.replace('@', ' [at] ');
+    }
+    return value;
+}
+</script>
+{{ end }} 
